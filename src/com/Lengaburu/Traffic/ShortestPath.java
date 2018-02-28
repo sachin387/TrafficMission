@@ -78,6 +78,13 @@ public class ShortestPath {
 		});
 	}
 	
+	/**
+	 * 
+	 * @param allPosiblePath
+	 * @param vehileTravellTimeData
+	 * @return
+	 */
+	
 	static LinkedList<LinkedList<String>> removeInvalidPaths(LinkedList<LinkedList<String>> allPosiblePath, LinkedList<TrafficDTO> vehileTravellTimeData) {
 		for(int i = 0;i<allPosiblePath.size();i++) {
 			if(allPosiblePath.get(i).get(0)!= "Silk Dorb") {
