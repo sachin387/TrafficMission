@@ -61,7 +61,7 @@ public class LengaburuTraffic {
 			Solution = sol.getTravellTime(todayWeather,todayTrafficInOrbit1,todayTrafficInOrbit2);
 		else if(cityVisitDision==2)
 			Solution = sol.getTravellTime(todayWeather,todayTrafficInOrbit1,todayTrafficInOrbit2,todayTrafficInOrbit3,todayTrafficInOrbit4);
-		System.out.println(Solution);
+		//System.out.println(Solution);
 		
 	}
 	

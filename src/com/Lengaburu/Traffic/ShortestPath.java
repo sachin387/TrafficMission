@@ -14,9 +14,7 @@ public class ShortestPath {
 	static LinkedList<String> currentPermutation = new LinkedList<>();
 	static void shortestPath(LinkedList<TrafficDTO> vehileTravellTimeData) {
 		// We are assuming that Silk Dorb city will be always the source city;
-		Float adjGraphMatrix [][];
 		removeMultipleOrbitForSameVehicleBetweenTwoCity(vehileTravellTimeData);
-		String sourceCity = "Silk Dorb";
 		LinkedList<String> vehicle = new LinkedList<>();
 		LinkedList<String> city = new LinkedList<>();
 		for (int i = 0; i < vehileTravellTimeData.size(); i++) {
@@ -39,6 +37,7 @@ public class ShortestPath {
 		//removing all the path whose starting city is not Silk Dorb and invalid paths.
 		allPosiblePaths = removeInvalidPaths(allPosiblePaths, vehileTravellTimeData);
 		getTotalTime(vehicle, allPosiblePaths, vehileTravellTimeData);
+		
 	}
 	
 	static HashMap<String,HashMap<LinkedList<String>, Float>>totalTravellTime = new HashMap<>();
@@ -68,22 +67,16 @@ public class ShortestPath {
 		}
 		
 		totalTravellTime.forEach((k,v)->{
-			v.forEach((k1,v2)->{
-				if(bestTime>v2) {
+			v.forEach((k1,v1)->{
+				if(bestTime>v1) {
 					shortestPath = k1;
 					bestVehicle = k;
-					bestTime=v2;
+					bestTime=v1;
 				}
 			});
 		});
 	}
 	
-	/**
-	 * 
-	 * @param allPosiblePath
-	 * @param vehileTravellTimeData
-	 * @return
-	 */
 	
 	static LinkedList<LinkedList<String>> removeInvalidPaths(LinkedList<LinkedList<String>> allPosiblePath, LinkedList<TrafficDTO> vehileTravellTimeData) {
 		for(int i = 0;i<allPosiblePath.size();i++) {
@@ -169,9 +162,6 @@ public class ShortestPath {
 					}
 				}
 			}
-
 		}
-
 	}
-
 }
