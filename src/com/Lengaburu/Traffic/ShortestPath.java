@@ -13,6 +13,8 @@ public class ShortestPath {
 	static LinkedList<LinkedList<String>> allPosiblePaths= new LinkedList<>();
 	static LinkedList<LinkedList<String>> allPosibleOrbits= new LinkedList<>();
 	static LinkedList<String> currentPermutation = new LinkedList<>();
+	static HashMap<String,HashMap<LinkedList<String>, Float>>totalTravellTime = new HashMap<>();
+	static Float totalTime;
 	static void shortestPath(LinkedList<TrafficDTO> vehileTravellTimeData) {
 		// We are assuming that Silk Dorb city will be always the source city;
 		removeMultipleOrbitForSameVehicleBetweenTwoCity(vehileTravellTimeData);
@@ -38,48 +40,30 @@ public class ShortestPath {
 		//removing all the path whose starting city is not Silk Dorb and invalid paths.
 		allPosiblePaths = removeInvalidPaths(allPosiblePaths, vehileTravellTimeData);
 		allPosibleOrbits = allPossibleOrbit(allPosiblePaths, vehileTravellTimeData);
-		getTotalTime(vehicle, allPosiblePaths, vehileTravellTimeData);
-		
+		totalTravellTime = getTotalTime(vehicle, allPosibleOrbits, vehileTravellTimeData);
 		
 	}
 	
-	static HashMap<String,HashMap<LinkedList<String>, Float>>totalTravellTime = new HashMap<>();
-	static void getTotalTime(LinkedList<String> vehicle, LinkedList<LinkedList<String>> allPosiblePath, LinkedList<TrafficDTO> vehileTravellTimeData) {	
-		for(int i=0;i<vehicle.size();i++) {
+
+	static HashMap<String,HashMap<LinkedList<String>, Float>> getTotalTime(LinkedList<String> vehicles, LinkedList<LinkedList<String>> allPosibleOrbit, LinkedList<TrafficDTO> vehileTravellTimeData) {	
+		vehicles.forEach(vehicle->{
 			HashMap<LinkedList<String>, Float> totalTravellTimeForAParticularVehicle =new HashMap<>();
-			for(int j=0;j<allPosiblePath.size();j++) {
-				Float totalTime = (float)0;
-				for(int k=0;k<allPosiblePath.get(j).size()-1;k++) {
-					String city1 = allPosiblePath.get(j).get(k);
-					String city2 = allPosiblePath.get(j).get(k+1);
-					
-					for(int l =0;l<vehileTravellTimeData.size();l++) {
-						if(city1 == vehileTravellTimeData.get(l).getConnectedCity1() && city2== vehileTravellTimeData.get(l).getConnectedCity2() && vehicle.get(i)==vehileTravellTimeData.get(l).getVehicle()) {
-							totalTime += vehileTravellTimeData.get(l).getTravellTime();
-							break;
+			for(int j=0;j<allPosibleOrbit.size();j++) {
+				totalTime = (float)0;
+				allPosibleOrbit.get(j).forEach(orbit->{
+					vehileTravellTimeData.forEach(vehicledata->{
+						if((orbit==vehicledata.getOrbit()) && vehicle==vehicledata.getVehicle()) {
+							totalTime+=vehicledata.getTravellTime();
 						}
-						else if(city1 == vehileTravellTimeData.get(l).getConnectedCity2() && city2== vehileTravellTimeData.get(l).getConnectedCity1() && vehicle.get(i)==vehileTravellTimeData.get(l).getVehicle()) {
-							totalTime += vehileTravellTimeData.get(l).getTravellTime();
-							break;
-						}
-					}
-				}
-				totalTravellTimeForAParticularVehicle.put(allPosiblePath.get(j), totalTime);
+					});	
+				});
+				totalTravellTimeForAParticularVehicle.put(allPosibleOrbit.get(j), totalTime);
 			}
-			totalTravellTime.put(vehicle.get(i), totalTravellTimeForAParticularVehicle);
-		}
-		
-		totalTravellTime.forEach((k,v)->{
-			v.forEach((k1,v1)->{
-				if(bestTime>v1) {
-					shortestPath = k1;
-					bestVehicle = k;
-					bestTime=v1;
-				}
-			});
+			totalTravellTime.put(vehicle, totalTravellTimeForAParticularVehicle);
 		});
+		return totalTravellTime;
 	}
-	
+
 	
 	
 	
