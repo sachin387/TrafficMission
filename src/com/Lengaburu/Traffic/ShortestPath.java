@@ -6,21 +6,25 @@ import java.util.LinkedList;
 import com.Lengaburu.Traffic.DTO.TrafficDTO;
 
 public class ShortestPath {
-	static LinkedList<String> shortestPath = new LinkedList<>();
-	static String bestVehicle = "";
-	static String result = "";
-	static float bestTime = Float.MAX_VALUE;
-	static LinkedList<LinkedList<String>> allPosiblePaths = new LinkedList<>();
-	static LinkedList<LinkedList<String>> allPosibleOrbits = new LinkedList<>();
-	static LinkedList<String> currentPermutation = new LinkedList<>();
-	static HashMap<String, HashMap<LinkedList<String>, Float>> totalTravellTime = new HashMap<>();
-	static Float totalTime, shortestTime;
+	LinkedList<String> shortestPath = new LinkedList<>();
+	String bestVehicle = "";
+	String result = "";
+	float bestTime = Float.MAX_VALUE;
+	LinkedList<LinkedList<String>> allPosiblePaths = new LinkedList<>();
+	LinkedList<LinkedList<String>> allPosibleOrbits = new LinkedList<>();
+	LinkedList<String> currentPermutation = new LinkedList<>();
+	HashMap<String, HashMap<LinkedList<String>, Float>> totalTravellTime = new HashMap<>();
+	Float totalTime, shortestTime;
 
-	static String shortestPath(LinkedList<TrafficDTO> vehileTravellTimeData) {
-		// We are assuming that Silk Dorb city will be always the source city;
-		removeMultipleOrbitForSameVehicleBetweenTwoCity(vehileTravellTimeData);
+	// shortestPath method will return best route and best vehicle for provided
+	// data.
+	String shortestPath(LinkedList<TrafficDTO> vehileTravellTimeData) {
 		LinkedList<String> vehicle = new LinkedList<>();
 		LinkedList<String> city = new LinkedList<>();
+		String[] allCities = new String[city.size()];
+
+		removeMultipleOrbitForSameVehicleBetweenTwoCity(vehileTravellTimeData);
+
 		for (int i = 0; i < vehileTravellTimeData.size(); i++) {
 			if (!vehicle.contains(vehileTravellTimeData.get(i).getVehicle())) {
 				vehicle.add(vehileTravellTimeData.get(i).getVehicle());
@@ -32,23 +36,124 @@ public class ShortestPath {
 			}
 		}
 
-		String[] allCities = new String[city.size()];
 		for (int j = 0; j < city.size(); j++) {
 			allCities[j] = city.get(j);
 		}
-		// this method will give all possible path between the cities. Keeping an
+
+		// This method will give all possible path between the cities. Keeping an
 		// assumption that King Shan Visit all cities.
 		allPosiblePaths = permute(allCities, 0);
-		// removing all the path whose starting city is not Silk Dorb and invalid paths.
+
+		// Removing all the path whose starting city is not Silk Dorb and invalid paths.
 		allPosiblePaths = removeInvalidPaths(allPosiblePaths, vehileTravellTimeData);
-		// allPosibleOrbits = allPossibleOrbit(allPosiblePaths, vehileTravellTimeData);
+
+		// Here we will get total travel time for all vehicles and valid paths
 		totalTravellTime = getTotalTime(vehicle, allPosiblePaths, vehileTravellTimeData);
+
+		// Here we will get the shortestTime from all possible paths for different
+		// vehicle.
 		shortestTime = getShortestTime(totalTravellTime);
+
+		// Here this will validate whether we have multiple Shortest time and based on
+		// it find the best result.
 		result = validateShortestTime(shortestTime, totalTravellTime, vehileTravellTimeData);
+
 		return result;
 	}
 
-	static HashMap<String, HashMap<LinkedList<String>, Float>> getTotalTime(LinkedList<String> vehicles,
+	// removeMultipleOrbitForSameVehicleBetweenTwoCity method will remove vehicle
+	// travel time data which is more between same path and same vehicle.
+	void removeMultipleOrbitForSameVehicleBetweenTwoCity(LinkedList<TrafficDTO> vehileTravellTimeData) {
+		Collections.sort(vehileTravellTimeData, new TravellTimeComparator());
+		for (int i = 0; i < vehileTravellTimeData.size(); i++) {
+			for (int j = i + 1; j < vehileTravellTimeData.size(); j++) {
+				if (vehileTravellTimeData.get(i).getConnectedCity1() == vehileTravellTimeData.get(j).getConnectedCity1()
+						&& vehileTravellTimeData.get(i).getConnectedCity2() == vehileTravellTimeData.get(j)
+								.getConnectedCity2()
+						&& vehileTravellTimeData.get(i).getVehicle() == vehileTravellTimeData.get(j).getVehicle()) {
+					if (vehileTravellTimeData.get(i).getTravellTime() <= vehileTravellTimeData.get(j)
+							.getTravellTime()) {
+						vehileTravellTimeData.remove(j);
+						j--;
+					}
+
+				} else if (vehileTravellTimeData.get(i).getConnectedCity1() == vehileTravellTimeData.get(j)
+						.getConnectedCity2()
+						&& vehileTravellTimeData.get(i).getConnectedCity2() == vehileTravellTimeData.get(j)
+								.getConnectedCity1()
+						&& vehileTravellTimeData.get(i).getVehicle() == vehileTravellTimeData.get(j).getVehicle()) {
+					if (vehileTravellTimeData.get(i).getTravellTime() <= vehileTravellTimeData.get(j)
+							.getTravellTime()) {
+						vehileTravellTimeData.remove(j);
+						j--;
+					}
+				}
+			}
+		}
+	}
+
+	// permute method will provide all possible paths for a given set of cities.
+	LinkedList<LinkedList<String>> permute(String[] a, int k) {
+		if (k == a.length) {
+			for (int i = 0; i < a.length; i++) {
+				currentPermutation.add(a[i]);
+			}
+			allPosiblePaths.add(currentPermutation);
+			currentPermutation = new LinkedList<>();
+		} else {
+			for (int i = k; i < a.length; i++) {
+				String temp = a[k];
+				a[k] = a[i];
+				a[i] = temp;
+				permute(a, k + 1);
+				temp = a[k];
+				a[k] = a[i];
+				a[i] = temp;
+			}
+		}
+		return allPosiblePaths;
+	}
+
+	// removeInvalidPaths method will remove all possible path where stating city is
+	// not Silk Dorb and invalid paths which cannot be found from data.
+	LinkedList<LinkedList<String>> removeInvalidPaths(LinkedList<LinkedList<String>> allPosiblePath,
+			LinkedList<TrafficDTO> vehileTravellTimeData) {
+		for (int i = 0; i < allPosiblePath.size(); i++) {
+			if (allPosiblePath.get(i).get(0) != "Silk Dorb") {
+				allPosiblePath.remove(i);
+				i--;
+			}
+		}
+		for (int i = 0; i < allPosiblePath.size(); i++) {
+			for (int j = 0; j < allPosiblePath.get(i).size() - 1; j++) {
+				String city1 = allPosiblePath.get(i).get(j);
+				String city2 = allPosiblePath.get(i).get(j + 1);
+				int counter = 0;
+				for (int k = 0; k < vehileTravellTimeData.size(); k++) {
+					if (city1 == vehileTravellTimeData.get(k).getConnectedCity1()
+							&& city2 == vehileTravellTimeData.get(k).getConnectedCity2()) {
+						counter++;
+						break;
+					} else if (city1 == vehileTravellTimeData.get(k).getConnectedCity2()
+							&& city2 == vehileTravellTimeData.get(k).getConnectedCity1()) {
+						counter++;
+						break;
+					}
+				}
+				if (counter == 0) {
+					allPosiblePath.remove(i);
+					i--;
+					break;
+				}
+			}
+
+		}
+		return allPosiblePath;
+	}
+
+	// getTotalTime method will provide total time for all particular vehicle in all
+	// complete path.
+	HashMap<String, HashMap<LinkedList<String>, Float>> getTotalTime(LinkedList<String> vehicles,
 			LinkedList<LinkedList<String>> allPosiblePaths, LinkedList<TrafficDTO> vehileTravellTimeData) {
 		vehicles.forEach(vehicle -> {
 			HashMap<LinkedList<String>, Float> totalTravellTimeForAParticularVehicle = new HashMap<>();
@@ -74,7 +179,9 @@ public class ShortestPath {
 		return totalTravellTime;
 	}
 
-	static float getShortestTime(HashMap<String, HashMap<LinkedList<String>, Float>> totalTravellTime) {
+	// getShortestTime method will provide the best shortest time in all vehicle in
+	// all paths.
+	float getShortestTime(HashMap<String, HashMap<LinkedList<String>, Float>> totalTravellTime) {
 
 		shortestTime = Float.MAX_VALUE;
 
@@ -88,7 +195,9 @@ public class ShortestPath {
 		return shortestTime;
 	}
 
-	static String validateShortestTime(float shortestTime,
+	// validateShortestTime will validate if multiple Shortest time is there or not
+	// and based on it will provide the best route and best vehicle.
+	String validateShortestTime(float shortestTime,
 			HashMap<String, HashMap<LinkedList<String>, Float>> totalTravellTime,
 			LinkedList<TrafficDTO> vehileTravellTimeData) {
 		totalTravellTime.forEach((vehicle, pathSetData) -> {
@@ -138,7 +247,8 @@ public class ShortestPath {
 		return result;
 	}
 
-	static LinkedList<String> getPath(HashMap<LinkedList<String>, Float> vehicleTravellTime, float shortestTime) {
+	// getPath will provide path for a given shortest time and vehicle data
+	LinkedList<String> getPath(HashMap<LinkedList<String>, Float> vehicleTravellTime, float shortestTime) {
 		vehicleTravellTime.forEach((path, time) -> {
 			if (time == shortestTime) {
 				shortestPath = path;
@@ -147,88 +257,4 @@ public class ShortestPath {
 		return shortestPath;
 	}
 
-	static LinkedList<LinkedList<String>> removeInvalidPaths(LinkedList<LinkedList<String>> allPosiblePath,
-			LinkedList<TrafficDTO> vehileTravellTimeData) {
-		for (int i = 0; i < allPosiblePath.size(); i++) {
-			if (allPosiblePath.get(i).get(0) != "Silk Dorb") {
-				allPosiblePath.remove(i);
-				i--;
-			}
-		}
-		for (int i = 0; i < allPosiblePath.size(); i++) {
-			for (int j = 0; j < allPosiblePath.get(i).size() - 1; j++) {
-				String city1 = allPosiblePath.get(i).get(j);
-				String city2 = allPosiblePath.get(i).get(j + 1);
-				int counter = 0;
-				for (int k = 0; k < vehileTravellTimeData.size(); k++) {
-					if (city1 == vehileTravellTimeData.get(k).getConnectedCity1()
-							&& city2 == vehileTravellTimeData.get(k).getConnectedCity2()) {
-						counter++;
-						break;
-					} else if (city1 == vehileTravellTimeData.get(k).getConnectedCity2()
-							&& city2 == vehileTravellTimeData.get(k).getConnectedCity1()) {
-						counter++;
-						break;
-					}
-				}
-				if (counter == 0) {
-					allPosiblePath.remove(i);
-					i--;
-					break;
-				}
-			}
-
-		}
-		return allPosiblePath;
-	}
-
-	static LinkedList<LinkedList<String>> permute(String[] a, int k) {
-		if (k == a.length) {
-			for (int i = 0; i < a.length; i++) {
-				currentPermutation.add(a[i]);
-			}
-			allPosiblePaths.add(currentPermutation);
-			currentPermutation = new LinkedList<>();
-		} else {
-			for (int i = k; i < a.length; i++) {
-				String temp = a[k];
-				a[k] = a[i];
-				a[i] = temp;
-				permute(a, k + 1);
-				temp = a[k];
-				a[k] = a[i];
-				a[i] = temp;
-			}
-		}
-		return allPosiblePaths;
-	}
-
-	public static void removeMultipleOrbitForSameVehicleBetweenTwoCity(LinkedList<TrafficDTO> vehileTravellTimeData) {
-		Collections.sort(vehileTravellTimeData, new TravellTimeComparator());
-		for (int i = 0; i < vehileTravellTimeData.size(); i++) {
-			for (int j = i + 1; j < vehileTravellTimeData.size(); j++) {
-				if (vehileTravellTimeData.get(i).getConnectedCity1() == vehileTravellTimeData.get(j).getConnectedCity1()
-						&& vehileTravellTimeData.get(i).getConnectedCity2() == vehileTravellTimeData.get(j)
-								.getConnectedCity2()
-						&& vehileTravellTimeData.get(i).getVehicle() == vehileTravellTimeData.get(j).getVehicle()) {
-					if (vehileTravellTimeData.get(i).getTravellTime() <= vehileTravellTimeData.get(j)
-							.getTravellTime()) {
-						vehileTravellTimeData.remove(j);
-						j--;
-					}
-
-				} else if (vehileTravellTimeData.get(i).getConnectedCity1() == vehileTravellTimeData.get(j)
-						.getConnectedCity2()
-						&& vehileTravellTimeData.get(i).getConnectedCity2() == vehileTravellTimeData.get(j)
-								.getConnectedCity1()
-						&& vehileTravellTimeData.get(i).getVehicle() == vehileTravellTimeData.get(j).getVehicle()) {
-					if (vehileTravellTimeData.get(i).getTravellTime() <= vehileTravellTimeData.get(j)
-							.getTravellTime()) {
-						vehileTravellTimeData.remove(j);
-						j--;
-					}
-				}
-			}
-		}
-	}
 }
