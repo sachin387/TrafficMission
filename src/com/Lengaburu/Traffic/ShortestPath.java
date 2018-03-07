@@ -21,7 +21,7 @@ public class ShortestPath {
 	String shortestPath(LinkedList<TrafficDTO> vehileTravellTimeData) {
 		LinkedList<String> vehicle = new LinkedList<>();
 		LinkedList<String> city = new LinkedList<>();
-		String[] allCities = new String[city.size()];
+		String[] allCities; 
 
 		removeMultipleOrbitForSameVehicleBetweenTwoCity(vehileTravellTimeData);
 
@@ -35,10 +35,10 @@ public class ShortestPath {
 				city.add(vehileTravellTimeData.get(i).getConnectedCity2());
 			}
 		}
-
+		allCities = new String[city.size()];
 		for (int j = 0; j < city.size(); j++) {
-			allCities[j] = city.get(j);
-		}
+			allCities[j] = city.get(j).toString();
+		} 
 
 		// This method will give all possible path between the cities. Keeping an
 		// assumption that King Shan Visit all cities.

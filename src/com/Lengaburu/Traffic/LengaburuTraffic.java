@@ -56,7 +56,7 @@ public class LengaburuTraffic {
 				System.out.println("Invalid Entry!!");
 				System.out.println(
 						"Please enter orbit1 traffic speed in format \"Orbit1 traffic speed is <TrafficSpeed> megamiles/hour\" ");
-				weatherUserInput = reader.readLine();
+				orbit1Traffic = reader.readLine();
 				userInputFormat = input.validateOrbitSpeedFormat(orbit1Traffic, "Orbit1");
 			}
 
@@ -70,8 +70,8 @@ public class LengaburuTraffic {
 				System.out.println("Invalid Entry!!");
 				System.out.println(
 						"Please enter orbit2 traffic speed in format \"Orbit2 traffic speed is <TrafficSpeed> megamiles/hour\":");
-				weatherUserInput = reader.readLine();
-				userInputFormat = input.validateOrbitSpeedFormat(orbit2Traffic, "Orbit1");
+				orbit2Traffic = reader.readLine();
+				userInputFormat = input.validateOrbitSpeedFormat(orbit2Traffic, "Orbit2");
 			}
 			// Getting orbit 1 traffic from user input data
 			todayTrafficInOrbit1 = input.getTodayTraffic(orbit1Traffic);
@@ -91,7 +91,7 @@ public class LengaburuTraffic {
 				System.out.println("Invalid Entry!!");
 				System.out.println(
 						"Please enter orbit3 traffic speed in format \"Orbit3 traffic speed is <TrafficSpeed> megamiles/hour\" ");
-				weatherUserInput = reader.readLine();
+				orbit3Traffic = reader.readLine();
 				userInputFormat = input.validateOrbitSpeedFormat(orbit3Traffic, "Orbit3");
 			}
 
@@ -105,7 +105,7 @@ public class LengaburuTraffic {
 				System.out.println("Invalid Entry!!");
 				System.out.println(
 						"Please enter orbit4 traffic speed in format \"Orbit4 traffic speed is <TrafficSpeed> megamiles/hour\":");
-				weatherUserInput = reader.readLine();
+				orbit4Traffic = reader.readLine();
 				userInputFormat = input.validateOrbitSpeedFormat(orbit4Traffic, "Orbit4");
 			}
 			// Getting orbit 3 traffic from user input data
