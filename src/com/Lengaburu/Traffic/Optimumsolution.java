@@ -36,8 +36,8 @@ public class Optimumsolution {
 				vehileTravellTimeData.add(trafficDTO);
 			});
 		});
-		optimumSolution = getBestVehicle(vehileTravellTimeData);
-		ShortestPath.shortestPath(vehileTravellTimeData);
+		//optimumSolution = getBestVehicle(vehileTravellTimeData);
+		optimumSolution = ShortestPath.shortestPath(vehileTravellTimeData);
 		return optimumSolution;
 	}
 	
@@ -67,8 +67,8 @@ public class Optimumsolution {
 				vehileTravellTimeData.add(trafficDTO);
 			});
 		});
-		optimumSolution = getBestVehicle(vehileTravellTimeData);
-		ShortestPath.shortestPath(vehileTravellTimeData);
+		//optimumSolution = getBestVehicle(vehileTravellTimeData);
+		optimumSolution = ShortestPath.shortestPath(vehileTravellTimeData);
 		return optimumSolution;
 	}
 	
@@ -79,7 +79,7 @@ public class Optimumsolution {
 	
 	private Float getOrbitTravellTime(VehicleRuleSet vehileRuleSet, OrbitRuleSet orbitRuleSet, HashMap<String, Integer> todayTrafficSpeedInOrbit) {
 		int vehileSpeed = 0;
-		float travellTime = 0;
+		Float travellTime = (float)0;
 		
 		if(todayTrafficSpeedInOrbit.get(orbitRuleSet.getOrbitName())<vehileRuleSet.getSpeed()) {
 			vehileSpeed = todayTrafficSpeedInOrbit.get(orbitRuleSet.getOrbitName());
@@ -88,7 +88,7 @@ public class Optimumsolution {
 			vehileSpeed = vehileRuleSet.getSpeed();
 		}
 		
-		travellTime = (orbitRuleSet.getOrbitDistance()/vehileSpeed)*60;
+		travellTime = ( (float)orbitRuleSet.getOrbitDistance()/(float)vehileSpeed)*(float)60;
 		return travellTime;
 	}
 	
