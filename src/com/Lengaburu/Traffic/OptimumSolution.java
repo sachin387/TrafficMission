@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import com.Lengaburu.Traffic.ruleset.*;
 import com.Lengaburu.Traffic.DTO.*;
 
-public class Optimumsolution {
+public class OptimumSolution {
 
 	float totalTravelTime = 0;
 	String optimumSolution = "";

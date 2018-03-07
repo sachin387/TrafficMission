@@ -115,7 +115,7 @@ public class LengaburuTraffic {
 
 		}
 
-		Optimumsolution sol = new Optimumsolution();
+		OptimumSolution sol = new OptimumSolution();
 		if (cityVisitDision == 1)
 			// this method will return the end result on which path is better for problem 1.
 			Solution = sol.getTravellTime(todayWeather, todayTrafficInOrbit1, todayTrafficInOrbit2);
